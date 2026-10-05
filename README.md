@@ -29,3 +29,10 @@ The trade-off: the integer is treated as **unsigned**. `int_to_ip(-1)` raises ra
 - **Leading zeros in octets are accepted.** `"010.0.0.1"` is parsed as decimal `10`, not octal `8`. Dotted-quad notation has no octal semantics, so `"0.0.0.0"` itself has a leading zero and we don't reject it.
 - **Booleans are rejected** by `int_to_ip`, even though `bool` is a subclass of `int` in Python. Passing `True` almost always means you called the wrong function.
 - `IpConversionError` is a subclass of `ValueError`, so existing `except ValueError` handlers still catch it.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
